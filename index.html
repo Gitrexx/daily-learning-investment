@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>投资理财底层逻辑 · 100 天学习计划</title>
+  <meta name="description" content="从底层逻辑出发，系统建立投资认知框架。每天一个主题，共 100 个 Topic。" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Markdown 渲染 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <!-- 公式渲染（MathJax，支持 $...$ 与 $$...$$） -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="menu-btn" aria-label="目录">☰</button>
+    <a class="brand" href="#"><span class="brand-mark">₿</span> 投资理财底层逻辑</a>
+    <div class="progress-wrap" title="学习进度">
+      <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+      <span id="progressText" class="progress-text">0 / 100</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head">
+        <h2>学习日志</h2>
+        <p class="sidebar-sub">按日期倒序 · 最新在上</p>
+      </div>
+      <nav id="topicList" class="topic-list" aria-label="主题列表"></nav>
+      <div class="sidebar-foot">
+        <a href="投资理财学习100Topics.md" target="_blank" rel="noopener">📋 完整 100 Topic 路线图</a>
+      </div>
+    </aside>
+    <div id="backdrop" class="backdrop"></div>
+
+    <main class="content">
+      <article id="article" class="article markdown-body">
+        <!-- 内容渲染区 -->
+      </article>
+      <footer class="content-foot">
+        投资有风险，学习需谨慎 · 本站内容仅为学习笔记，不构成任何投资建议。
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
