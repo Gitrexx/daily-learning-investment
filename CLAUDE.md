@@ -31,9 +31,21 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
    `YYYY-MM-DD` format (this is the user's local date). Follow the format spec below.
    - If a file for today already exists, overwrite it (one lesson per day).
 
-5. **Rebuild the manifest:** run `python3 scripts/build_manifest.py`.
+5. **Validate the quiz JSON parses** before moving on (a broken block silently disables
+   the gate). Quick check:
+   ```bash
+   python3 - <<'PY'
+   import re, json, pathlib
+   md = pathlib.Path("content/<TODAY>.md").read_text(encoding="utf-8")
+   data = json.loads(re.search(r'class="quiz-data">(.*?)</script>', md, re.S).group(1))
+   assert len(data) == 5 and all(0 <= q["answer"] < len(q["options"]) for q in data)
+   print("quiz OK")
+   PY
+   ```
 
-6. **Commit & push** to `main` (this triggers the GitHub Actions deploy). Commit message:
+6. **Rebuild the manifest:** run `python3 scripts/build_manifest.py`.
+
+7. **Commit & push** to `main` (this triggers the GitHub Actions deploy). Commit message:
    `Add Topic N: <title>`.
 
 ## Lesson format spec (IMPORTANT — the site depends on it)
@@ -53,11 +65,33 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
   in `<div class="widget">…</div>` — the site already styles `.widget`, its labels,
   `input[type=range]`, `input[type=number]`, `select`, `button`, and `.result`.
   Keep widget JS self-contained in an IIFE and guard for missing elements.
+- **Every lesson MUST end with a 章末自测 (end-of-chapter quiz) — the site is a gated /
+  闯关 course: the next chapter stays LOCKED until the reader scores ≥ 80% (4 / 5) on this
+  quiz.** Do NOT hand-write quiz JS or quiz markup/styling. Emit ONLY a single data block;
+  the app renders it (single-question pagination, 上一题/下一题, 提交, grading, explanations,
+  retry) and unlocks the next topic on pass:
+
+  ```html
+  <script type="application/json" class="quiz-data">
+  [
+    { "q": "题干…", "options": ["A","B","C","D"], "answer": 1, "explain": "解析…" }
+  ]
+  </script>
+  ```
+
+  - `answer` is the 0-based index of the correct option. Provide **exactly 5 questions**.
+  - The JSON must be valid (the app `JSON.parse`s it): escape quotes, no trailing commas,
+    no `//` comments. Keep math as plain text or simple `$...$` inside strings.
+  - Pass state is stored in the reader's `localStorage`; unlocking is purely client-side.
+  - If a lesson has NO quiz block, the app auto-passes it so it can't block the course —
+    but always include one.
+- **Section order within the file:** H1 (`# Topic N：…`) → lesson body (sections, tables,
+  formulas, interactive widget) → `## 📝 本篇小结` (summary) → one-line teaser for
+  `Topic N+1` → `## 🧠 章末自测` (intro line + the `quiz-data` block) → disclaimer line.
 - **Pedagogy**: start from first principles → build intuition → use a concrete example or
-  interactive demo → connect to investing decisions → end with a 小结 (summary) and a
-  one-line teaser for `Topic N+1`.
-- See `content/2026-06-17.md` (Topic 1) as the reference example for tone, depth, and the
-  interactive-widget pattern.
+  interactive demo → connect to investing decisions → summary → teaser → quiz.
+- Use `content/2026-06-17.md` (Topic 1) and `content/2026-06-18.md` (Topic 2) as the
+  reference examples for tone, depth, the `.widget` interactive pattern, and the quiz block.
 - Singapore context is welcome where relevant (the curriculum references MAS, CPF, SG tax,
   SG REITs) — the learner is Singapore-based.
 - End every lesson with a disclaimer line: *本文为个人学习笔记，不构成任何投资建议。*

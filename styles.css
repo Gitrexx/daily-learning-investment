@@ -102,6 +102,12 @@ body {
 .topic-item .ti-meta { display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--text-faint); margin-bottom: 3px; }
 .topic-item .ti-num { background: var(--accent); color:#fff; border-radius: 5px; padding: 1px 6px; font-weight: 600; }
 .topic-item .ti-title { font-size: 13.5px; line-height: 1.4; color: var(--text); }
+.topic-item .ti-state { margin-left: auto; font-size: 12px; }
+.topic-item .ti-state.done { color: #28a745; font-weight: 700; }
+.topic-item.locked { opacity: .55; }
+.topic-item.locked:hover { background: var(--code-bg); }
+.topic-item.locked .ti-title { color: var(--text-faint); }
+.topic-item.passed .ti-num { background: #28a745; }
 .topic-empty { padding: 24px 20px; color: var(--text-faint); font-size: 13px; line-height: 1.8; }
 .sidebar-foot { padding: 14px 20px; border-top: 1px solid var(--border); }
 .sidebar-foot a { font-size: 12.5px; color: var(--link); text-decoration: none; }
@@ -180,10 +186,119 @@ body {
   border-radius: 8px; background: var(--bg); color: var(--text); width: 100%;
 }
 .markdown-body .widget .result { font-size: 22px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-.markdown-body .widget button {
+.markdown-body .widget button:not([class*="quiz"]) {
   font: inherit; cursor: pointer; border: none; background: var(--accent); color: #fff;
   padding: 8px 16px; border-radius: 8px; margin-top: 8px;
 }
+
+/* ---------- Quiz（章末自测 / 闯关 · 单题翻页） ---------- */
+.markdown-body .quiz { font-family: var(--font-ui); padding: 22px 22px 20px; }
+.quiz-head h4 { margin: 0; font-size: 17px; }
+.quiz-hint { margin: 4px 0 0; font-size: 13px; color: var(--text-soft); }
+.quiz-hint b { color: var(--accent); }
+
+/* 进度步点 */
+.quiz-steps { display: flex; gap: 7px; margin-top: 14px; }
+.quiz-step {
+  flex: 1; height: 5px; border-radius: 99px; background: var(--border);
+  transition: background .2s;
+}
+.quiz-step.answered { background: var(--accent); opacity: .55; }
+.quiz-step.current { background: var(--accent); opacity: 1; }
+.quiz-step.ok { background: #28a745; opacity: 1; }
+.quiz-step.no { background: #dc3545; opacity: 1; }
+
+/* 单题：默认隐藏，仅 .active 显示 */
+.quiz-q { display: none; margin-top: 22px; }
+.quiz-q.active { display: block; animation: quizslide .22s ease; }
+@keyframes quizslide { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+
+.quiz-stem {
+  display: flex; gap: 10px; align-items: baseline;
+  font-weight: 600; margin: 0 0 14px; font-size: 16px; line-height: 1.5;
+}
+.quiz-qno {
+  flex: 0 0 auto; display: inline-grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 700; transform: translateY(2px);
+}
+
+/* 选项：未选中透明，选中才深色填充 */
+.quiz-opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  font: inherit; font-size: 14.5px; cursor: pointer;
+  background: transparent; color: var(--text); border: 1.5px solid var(--border);
+  margin: 8px 0; padding: 11px 14px; border-radius: 11px;
+  transition: border-color .15s, background .15s, color .15s, transform .05s;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--accent); }
+.quiz-opt:active:not(:disabled) { transform: scale(.99); }
+.quiz-opt:disabled { cursor: default; }
+.quiz-letter {
+  flex: 0 0 auto; display: inline-grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 8px;
+  background: transparent; border: 1px solid var(--border);
+  font-weight: 700; font-size: 13px; color: var(--text-soft);
+  transition: inherit;
+}
+.quiz-text { flex: 1; line-height: 1.45; }
+.quiz-tick { flex: 0 0 auto; width: 18px; text-align: center; font-weight: 700; color: transparent; }
+
+/* 选中：深色实底 */
+.quiz-opt.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+.quiz-opt.selected .quiz-letter { background: #fff; border-color: #fff; color: var(--accent); }
+.quiz-opt.selected .quiz-tick { color: #fff; }
+.quiz-opt.selected .quiz-tick::before { content: "✓"; }
+
+/* 判分后 */
+.quiz-opt.right { border-color: #28a745; background: #28a745; color: #fff; }
+.quiz-opt.right .quiz-letter { background: #fff; border-color: #fff; color: #28a745; }
+.quiz-opt.right .quiz-tick { color: #fff; }
+.quiz-opt.right .quiz-tick::before { content: "✓"; }
+.quiz-opt.wrong { border-color: #dc3545; background: #dc3545; color: #fff; }
+.quiz-opt.wrong .quiz-letter { background: #fff; border-color: #fff; color: #dc3545; }
+.quiz-opt.wrong .quiz-tick { color: #fff; }
+.quiz-opt.wrong .quiz-tick::before { content: "✕"; }
+
+.quiz-explain {
+  font-size: 13.5px; color: var(--text-soft); line-height: 1.65;
+  margin: 12px 0 0; padding: 10px 14px; border-radius: 9px;
+  background: var(--code-bg); border-left: 3px solid var(--border);
+}
+
+/* 底部导航 */
+.quiz-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-top: 24px;
+}
+.quiz-submit {
+  font: inherit; font-weight: 600; cursor: pointer; border: none;
+  background: var(--accent); color: #fff; padding: 11px 22px; border-radius: 10px;
+  transition: opacity .15s, filter .15s;
+}
+.quiz-submit:hover:not(:disabled) { filter: brightness(1.05); }
+.quiz-submit:disabled { opacity: .4; cursor: not-allowed; }
+.quiz-nav {
+  font: inherit; font-weight: 600; cursor: pointer;
+  background: transparent; color: var(--text-soft);
+  border: 1.5px solid var(--border); padding: 10px 18px; border-radius: 10px;
+  transition: border-color .15s, color .15s;
+}
+.quiz-nav:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.quiz-nav:disabled { opacity: .4; cursor: not-allowed; }
+.quiz-nav.next { margin-left: auto; }
+
+.quiz-banner {
+  margin-top: 16px; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border);
+  animation: quizpop .2s ease;
+}
+@keyframes quizpop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.quiz-banner .qb-score { font-size: 18px; font-weight: 700; }
+.quiz-banner .qb-sub { font-size: 13.5px; color: var(--text-soft); margin-top: 3px; }
+.quiz-banner.pass { background: rgba(40,167,69,.12); border-color: #28a745; }
+.quiz-banner.fail { background: rgba(220,53,69,.08); border-color: #dc3545; }
+.quiz-banner .quiz-submit { margin-top: 12px; }
 
 .loading { color: var(--text-faint); padding: 40px 0; text-align: center; }
 

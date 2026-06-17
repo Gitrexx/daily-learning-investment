@@ -35,6 +35,9 @@
    会重建 manifest 并把整个仓库作为静态站点部署到 GitHub Pages。
 4. **浏览阅读。** `index.html` + `app.js` 读取 manifest，在浏览器里渲染 Markdown
    （支持公式、表格、以及内嵌的交互组件），并展示学习进度（`N / 100`）。
+5. **闯关式解锁。** 每篇结尾都有一道**章末自测**（5 题单选，单题翻页作答）。**答对 ≥ 80%
+   （4 / 5）才会解锁下一章**——未解锁的章节在目录里显示 🔒，已通过显示 ✓。通关进度保存在
+   浏览器本地（`localStorage`），所以是「学到哪、解锁到哪」。
 
 ```
 content/2026-06-17.md  ──┐
@@ -51,8 +54,8 @@ content/...            ──┘                                      │
 | 文件 / 目录 | 作用 |
 |---|---|
 | `index.html` | 站点外壳：顶栏、侧边目录、内容区 |
-| `app.js` | 读取 manifest、渲染 Markdown、执行内嵌交互脚本、进度计算、深链路由 |
-| `styles.css` | 全部样式（含浅色/深色自适应、移动端适配、`.widget` 组件样式） |
+| `app.js` | 读取 manifest、渲染 Markdown、执行内嵌交互脚本、章末自测的渲染/判分/解锁、进度计算、深链路由 |
+| `styles.css` | 全部样式（含浅色/深色自适应、移动端适配、`.widget` 组件与章末自测样式） |
 | `content/` | 每日学习文档 `YYYY-MM-DD.md` + 自动生成的 `manifest.json` |
 | `scripts/build_manifest.py` | 扫描 `content/` 重建 `manifest.json` |
 | `投资理财学习100Topics.md` | 100 个 Topic 的完整路线图 |
