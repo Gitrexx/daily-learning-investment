@@ -16,6 +16,10 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
      NOT filenames or how many days have passed.
    - List `content/*.md` lesson files (named `YYYY-MM-DD.md`). In each, read the first `# `
      heading and parse its topic number from the `Topic <num>：...` prefix.
+   - To quickly see the existing files and their H1 headings in one shot, run:
+     ```bash
+     ls content/ && echo "---HEADINGS---" && for f in content/*.md; do head -1 "$f"; done
+     ```
    - `N = (highest topic number found across all files) + 1`. If `content/` has no lesson
      files yet, `N = 1`.
    - If `N > 100`, the curriculum is complete — write nothing and stop, noting it.
