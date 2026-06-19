@@ -1,13 +1,13 @@
 # CLAUDE.md — Daily Investing-Learning Content Routine
 
 This repo is a static, GitHub Pages–hosted learning site. Each day, **one** new lesson
-is generated for the next topic in a fixed 100-topic curriculum. This file tells you
+is generated for the next topic in a fixed 139-topic curriculum. This file tells you
 (Claude, running via the daily routine) exactly what to do on each run.
 
 ## Mission (per run)
 
 Generate **one** in-depth, interactive Chinese learning document for the **next**
-un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
+un-covered topic, in strict numeric order 1 → 139. Then rebuild the manifest.
 
 ## Step-by-step
 
@@ -22,11 +22,11 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
      ```
    - `N = (highest topic number found across all files) + 1`. If `content/` has no lesson
      files yet, `N = 1`.
-   - If `N > 100`, the curriculum is complete — write nothing and stop, noting it.
+   - If `N > 139`, the curriculum is complete — write nothing and stop, noting it.
    - NOTE: the user may run this routine **several times in one day** to learn ahead or to
      test. So always recompute `N` from existing files — never assume "one topic per day".
 
-2. **Look up topic `N`** in `投资理财学习100Topics.md` (root of repo). Use its title and
+2. **Look up topic `N`** in `投资理财学习139Topics.md` (root of repo). Use its title and
    the module it belongs to for context. Read neighboring topics so the lesson connects
    to what came before and teases what comes next.
 
@@ -69,7 +69,7 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
 - **Language: Chinese (简体中文).** All lesson content is in Chinese.
 - **First line MUST be an H1 of the exact form:** `# Topic N：<标题>`
   (full-width colon `：` is fine). `build_manifest.py` reads this as the title, and
-  `app.js` parses the `N` to track progress (`N / 100`) and number the sidebar. Do not
+  `app.js` parses the `N` to track progress (`N / 139`) and number the sidebar. Do not
   omit `Topic N`.
 - The file is rendered as Markdown by `marked` in the browser, with:
   - **Math via MathJax**: use `$...$` for inline and `$$...$$` for display formulas.
@@ -115,7 +115,7 @@ un-covered topic, in strict numeric order 1 → 100. Then rebuild the manifest.
 ## What NOT to do
 
 - Don't generate more than one topic per run, and don't skip ahead or out of order.
-- Don't rename `投资理财学习100Topics.md`. Lesson files must stay named `YYYY-MM-DD.md`
+- Don't rename `投资理财学习139Topics.md`. Lesson files must stay named `YYYY-MM-DD.md`
   (pure date, no suffix) so the manifest picks them up; advance the date by one each run.
 - Don't edit `index.html` / `app.js` / `styles.css` as part of a content run — those are
   the app shell, not content.

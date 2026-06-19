@@ -1,10 +1,10 @@
-# 投资理财底层逻辑 · 100 天学习计划
+# 投资理财底层逻辑 · 139 天学习计划
 
 > 从「钱是什么」出发，循序渐进地建立一套**属于自己的、可持续执行的投资认知框架**。
 > 本项目是一个托管在 GitHub Pages 上的静态学习站：每天新增一篇深入、可交互的学习文档，
-> 顺着精心编排的 100 个 Topic 逐日推进。
+> 顺着精心编排的 139 个 Topic 逐日推进。
 
-📖 **完整路线图**：见 [`投资理财学习100Topics.md`](投资理财学习100Topics.md)（17 个模块，100 个 Topic）
+📖 **完整路线图**：见 [`投资理财学习139Topics.md`](投资理财学习139Topics.md)（21 个模块，139 个 Topic）
 
 ---
 
@@ -27,14 +27,14 @@
 ## 它是怎么运作的？
 
 1. **每天生成一篇内容。** 通过 Claude Code 的 routine（定时任务），按 `CLAUDE.md` 的规则，
-   顺着 1 → 100 的顺序，每天针对**一个** Topic 生成一篇中文学习文档，存为
+   顺着 1 → 139 的顺序，每天针对**一个** Topic 生成一篇中文学习文档，存为
    `content/YYYY-MM-DD.md`。
 2. **自动构建索引。** `scripts/build_manifest.py` 扫描 `content/` 下的日期文档，
    生成 `content/manifest.json`（站点的目录数据）。
 3. **自动部署。** push 到 `main` 分支后，[GitHub Actions](.github/workflows/static.yml)
    会重建 manifest 并把整个仓库作为静态站点部署到 GitHub Pages。
 4. **浏览阅读。** `index.html` + `app.js` 读取 manifest，在浏览器里渲染 Markdown
-   （支持公式、表格、以及内嵌的交互组件），并展示学习进度（`N / 100`）。
+   （支持公式、表格、以及内嵌的交互组件），并展示学习进度（`N / 139`）。
 5. **闯关式解锁。** 每篇结尾都有一道**章末自测**（5 题单选，单题翻页作答）。**答对 ≥ 80%
    （4 / 5）才会解锁下一章**——未解锁的章节在目录里显示 🔒，已通过显示 ✓。通关进度保存在
    浏览器本地（`localStorage`），所以是「学到哪、解锁到哪」。
@@ -58,7 +58,7 @@ content/...            ──┘                                      │
 | `styles.css` | 全部样式（含浅色/深色自适应、移动端适配、`.widget` 组件与章末自测样式） |
 | `content/` | 每日学习文档 `YYYY-MM-DD.md` + 自动生成的 `manifest.json` |
 | `scripts/build_manifest.py` | 扫描 `content/` 重建 `manifest.json` |
-| `投资理财学习100Topics.md` | 100 个 Topic 的完整路线图 |
+| `投资理财学习139Topics.md` | 139 个 Topic 的完整路线图 |
 | `CLAUDE.md` | 给每日 routine 的指令：判断该做第几个 Topic、内容格式规范 |
 | `.github/workflows/static.yml` | GitHub Actions：构建 manifest 并部署到 Pages |
 

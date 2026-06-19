@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const TOTAL_TOPICS = 100;
+  const TOTAL_TOPICS = 139;
   const PASS_RATIO = 0.8;            // 通过线：答对比例 ≥ 80%
   const STORE_KEY = "investing.passed";
 
@@ -154,9 +154,9 @@
     els.article.innerHTML =
       '<div class="welcome">' +
       '<div class="big">📈</div>' +
-      "<h1>投资理财底层逻辑 · 100 天</h1>" +
+      "<h1>投资理财底层逻辑 · 139 天</h1>" +
       "<p>从「钱是什么」开始，循序渐进建立属于自己的投资认知框架。</p>" +
-      "<p>每天一个 Topic，共 100 篇。通过每章末尾的自测，解锁下一章。</p>" +
+      "<p>每天一个 Topic，共 139 篇。通过每章末尾的自测，解锁下一章。</p>" +
       "</div>";
   }
 
