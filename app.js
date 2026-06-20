@@ -46,6 +46,20 @@
     renderList();
     updateProgress();
   }
+  // 「自证解锁」：在锁着的章节直接答题通过后，回填 Topic 1…n 全部为已通过，
+  // 这样换设备 / 清缓存后无需从头重做，一次答对即可跳到当前进度。
+  function markPassedUpTo(n) {
+    if (!n) return;
+    let changed = false;
+    for (let i = 1; i <= n; i++) {
+      if (!passed.has(i)) { passed.add(i); changed = true; }
+    }
+    if (changed) {
+      savePassed(passed);
+      renderList();
+      updateProgress();
+    }
+  }
 
   /* ---------- 工具 ---------- */
   function topicNumber(title) {
@@ -174,10 +188,15 @@
       `<h1>本章尚未解锁</h1>` +
       `<p>完成 <strong>Topic ${n - 1}</strong> 的章末自测并答对 ≥ ${Math.round(PASS_RATIO * 100)}%，即可解锁本章。</p>` +
       prevLink +
+      '<p class="lock-alt">已经在别处学过这里？换了设备或清了缓存？</p>' +
+      '<button type="button" class="lock-btn ghost lock-challenge">我已学过 · 直接答题解锁</button>' +
+      `<p class="lock-note">直接做本章自测，答对 ≥ ${Math.round(PASS_RATIO * 100)}% 即可一次解锁 Topic 1 – ${n}。</p>` +
       "</div>";
+    const challengeBtn = els.article.querySelector(".lock-challenge");
+    if (challengeBtn) challengeBtn.addEventListener("click", () => loadEntry(entry, true));
   }
 
-  async function loadEntry(entry) {
+  async function loadEntry(entry, challenge) {
     setActive(entry.date);
     toggleSidebar(false);
     els.article.innerHTML = '<div class="loading">加载中…</div>';
@@ -185,25 +204,40 @@
     try {
       const res = await fetch("content/" + entry.file, { cache: "no-cache" });
       if (!res.ok) throw new Error("content " + res.status);
-      renderMarkdown(await res.text(), entry);
+      renderMarkdown(await res.text(), entry, challenge);
     } catch (e) {
       els.article.innerHTML =
         '<div class="loading">无法加载该文档（' + escapeHtml(entry.file) + "）。</div>";
     }
   }
 
-  function renderMarkdown(md, entry) {
+  function renderMarkdown(md, entry, challenge) {
     const n = topicNumber(entry.title);
     const dateBadge =
       '<div class="article-date">' +
       (n ? `<span class="badge">Topic ${n}</span>` : "") +
       `<span>📅 ${entry.date}</span></div>`;
-
     const html = window.marked ? marked.parse(md) : "<pre>" + escapeHtml(md) + "</pre>";
+
+    if (challenge) {
+      // 自证解锁模式：不展示学习内容，只保留章末自测的数据块。
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html;
+      const quizEl = tmp.querySelector(".quiz-data, script.quiz");
+      const banner =
+        '<div class="challenge-banner">⚡ 自证解锁模式：完成下面的章末自测，' +
+        `答对即可一次解锁 Topic 1 – ${n}。</div>`;
+      els.article.innerHTML = dateBadge + banner;
+      if (quizEl) els.article.appendChild(quizEl);
+      buildQuizzes(els.article, n, challenge);
+      typesetMath(els.article);
+      return;
+    }
+
     els.article.innerHTML = dateBadge + html;
 
     runEmbeddedScripts(els.article);
-    buildQuizzes(els.article, n);
+    buildQuizzes(els.article, n, challenge);
     typesetMath(els.article);
   }
 
@@ -226,27 +260,28 @@
 
   /* ---------- 测验（数据驱动 + 闯关解锁） ---------- */
   // 内容里用 <script type="application/json" class="quiz-data">[ {...} ]</script> 声明题目。
-  function buildQuizzes(root, topicNum) {
+  function buildQuizzes(root, topicNum, challenge) {
     const dataEl = root.querySelector(".quiz-data, script.quiz");
     if (!dataEl) {
       // 本篇没有测验：直接视为通过，避免卡住后续章节。
-      if (topicNum) markPassed(topicNum);
+      // 自证解锁模式下回填 1…N，普通模式只标记本章。
+      if (topicNum) (challenge ? markPassedUpTo : markPassed)(topicNum);
       return;
     }
     let questions;
     try {
       questions = JSON.parse(dataEl.textContent);
     } catch (e) {
-      if (topicNum) markPassed(topicNum);
+      if (topicNum) (challenge ? markPassedUpTo : markPassed)(topicNum);
       return;
     }
     const mount = document.createElement("div");
     mount.className = "widget quiz";
     dataEl.replaceWith(mount);
-    renderQuiz(mount, questions, topicNum);
+    renderQuiz(mount, questions, topicNum, challenge);
   }
 
-  function renderQuiz(mount, questions, topicNum) {
+  function renderQuiz(mount, questions, topicNum, challenge) {
     const need = Math.ceil(questions.length * PASS_RATIO);
     const LETTERS = "ABCDEFGH";
     const total = questions.length;
@@ -401,10 +436,17 @@
       banner.hidden = false;
       banner.className = "quiz-banner " + (pass ? "pass" : "fail");
       if (pass) {
-        banner.innerHTML =
-          `<div class="qb-score">🎉 ${correct} / ${total}　已通过</div>` +
-          `<div class="qb-sub">下一章已解锁，去左侧目录继续吧。可翻看各题解析。</div>`;
-        markPassed(topicNum);
+        if (challenge && topicNum) {
+          markPassedUpTo(topicNum);
+          banner.innerHTML =
+            `<div class="qb-score">🎉 ${correct} / ${total}　已通过</div>` +
+            `<div class="qb-sub">已一次解锁 Topic 1 – ${topicNum}，去左侧目录继续吧。可翻看各题解析。</div>`;
+        } else {
+          markPassed(topicNum);
+          banner.innerHTML =
+            `<div class="qb-score">🎉 ${correct} / ${total}　已通过</div>` +
+            `<div class="qb-sub">下一章已解锁，去左侧目录继续吧。可翻看各题解析。</div>`;
+        }
       } else {
         banner.innerHTML =
           `<div class="qb-score">${correct} / ${total}　未达 ${need} 题</div>` +
