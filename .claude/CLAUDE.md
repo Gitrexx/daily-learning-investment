@@ -96,6 +96,15 @@ un-covered topic, in strict numeric order 1 → 139. Then rebuild the manifest.
   ```
 
   - `answer` is the 0-based index of the correct option. Provide **exactly 5 questions**.
+  - **Don't make the correct answer guessable by shape.** Common tells to avoid:
+    - The right option is the longest / most detailed / most hedged ("视情况而定", "以上皆是").
+      Keep all four options roughly the same length and level of specificity — give the
+      *wrong* options real, plausible detail too, not just short throwaway phrases.
+    - Distractors that are obviously absurd, or only one option that actually answers the
+      stem. Make every distractor a mistake a real learner could plausibly make (a common
+      misconception, a swapped number, the right idea applied to the wrong concept).
+    - The answer always landing on the same index. **Vary `answer` across the 5 questions**
+      (don't cluster on one position; aim for a spread across 0–3).
   - The JSON must be valid (the app `JSON.parse`s it): escape quotes, no trailing commas,
     no `//` comments. Keep math as plain text or simple `$...$` inside strings.
   - Pass state is stored in the reader's `localStorage`; unlocking is purely client-side.
